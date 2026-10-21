@@ -1,0 +1,67 @@
+-- โหลด Rayfield UI Library
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- สร้างหน้าต่างเมนูหลัก
+local Window = Rayfield:CreateWindow({
+   Name = "🐾 เมนูสัตว์เลี้ยง & ออโต้ฟาร์ม | THAILAND",
+   LoadingTitle = "กำลังโหลดสคริปต์...",
+   LoadingSubtitle = "โดย ระบบอัตโนมัติ",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "AnimalMapConfig"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+   KeySystem = false -- ตั้งเป็น true หากต้องการเปิดระบบใส่คีย์
+})
+
+-- สร้างแท็บเมนูภาษาไทย
+local MainTab = Window:CreateTab("⚡ ฟังก์ชั่นหลัก", 4483362458) -- ไอคอน
+local Section = MainTab:CreateSection("ตั้งค่าการโจมตี")
+
+-- ตัวแปรควบคุมฟังก์ชั่น (State Variables)
+local AutoAttackEnabled = false
+local OneHitKillEnabled = false
+
+-- 1. ปุ่มเปิด/ปิด ตีอัตโนมัติ (Auto Attack)
+local ToggleAutoAttack = MainTab:CreateToggle({
+   Name = "เปิด / ปิด ตีอัตโนมัติ (Auto Attack)",
+   CurrentValue = false,
+   Flag = "AutoAttackFlag",
+   Callback = function(Value)
+      AutoAttackEnabled = Value
+   end,
+})
+
+-- 2. ปุ่มเปิด/ปิด ตีครั้งเดียวตาย (One Hit Kill)
+local ToggleOneHit = MainTab:CreateToggle({
+   Name = "เปิด / ปิด ตีครั้งเดียวตาย (One Hit Kill)",
+   CurrentValue = false,
+   Flag = "OneHitFlag",
+   Callback = function(Value)
+      OneHitKillEnabled = Value
+   end,
+})
+
+-- ==========================================
+-- การทำงานของระบบ (Loop Logic)
+-- ==========================================
+
+-- Loop สำหรับตีอัตโนมัติ & One Hit Kill
+task.spawn(function()
+    while task.wait(0.1) do
+        if AutoAttackEnabled then
+            pcall(function()
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                if not character then return end
+                
+                -- ตรวจหาอาวุธที่ถืออยู่
+                local tool = character:FindFirstChildOfClass("Tool")
+                if tool then
+                    -- สั่ง Activate Tool (โจมตี)
+                    tool
